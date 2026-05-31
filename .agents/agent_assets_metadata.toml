@@ -1,0 +1,8 @@
+uploads = []
+generated = []
+
+[[outputs]]
+id = "zqMQtznFojGTk7aakyP2k"
+uri = "file://README.md"
+type = "text"
+title = "README.md — Wrong Answers Only"

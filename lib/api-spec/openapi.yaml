@@ -1,0 +1,174 @@
+openapi: 3.1.0
+info:
+  # Do not change the title, if the title changes, the import paths will be broken
+  title: Api
+  version: 0.1.0
+  description: API specification
+servers:
+  - url: /api
+    description: Base API path
+tags:
+  - name: health
+    description: Health operations
+  - name: quiz
+    description: Wrong Answers Only quiz game operations
+paths:
+  /healthz:
+    get:
+      operationId: healthCheck
+      tags: [health]
+      summary: Health check
+      description: Returns server health status
+      responses:
+        "200":
+          description: Healthy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
+  /quiz/generate:
+    post:
+      operationId: generateQuiz
+      tags: [quiz]
+      summary: Generate a quiz question with 4 wrong answers
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/QuizRequest"
+      responses:
+        "200":
+          description: Generated quiz question with wrong answers
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/QuizQuestion"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "500":
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+  /quiz/explain:
+    post:
+      operationId: explainAnswer
+      tags: [quiz]
+      summary: Get a witty explanation of why the selected wrong answer is wrong
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ExplainRequest"
+      responses:
+        "200":
+          description: Witty explanation of why the answer is wrong
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ExplainResponse"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "500":
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+  /quiz/topics:
+    get:
+      operationId: getSuggestedTopics
+      tags: [quiz]
+      summary: Get a list of fun suggested topics to play with
+      responses:
+        "200":
+          description: List of suggested topics
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TopicsResponse"
+components:
+  schemas:
+    HealthStatus:
+      type: object
+      properties:
+        status:
+          type: string
+      required:
+        - status
+    QuizRequest:
+      type: object
+      required:
+        - topic
+      properties:
+        topic:
+          type: string
+          minLength: 1
+          maxLength: 200
+        difficulty:
+          type: string
+          enum: [easy, hard]
+    QuizQuestion:
+      type: object
+      required:
+        - question
+        - answers
+        - topic
+      properties:
+        question:
+          type: string
+        answers:
+          type: array
+          items:
+            type: string
+          minItems: 4
+          maxItems: 4
+        topic:
+          type: string
+    ExplainRequest:
+      type: object
+      required:
+        - question
+        - selectedAnswer
+        - topic
+      properties:
+        question:
+          type: string
+        selectedAnswer:
+          type: string
+        topic:
+          type: string
+    ExplainResponse:
+      type: object
+      required:
+        - explanation
+      properties:
+        explanation:
+          type: string
+    TopicsResponse:
+      type: object
+      required:
+        - topics
+      properties:
+        topics:
+          type: array
+          items:
+            type: string
+    ApiError:
+      type: object
+      required:
+        - error
+      properties:
+        error:
+          type: string

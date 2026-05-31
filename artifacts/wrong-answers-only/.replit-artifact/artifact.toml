@@ -1,0 +1,31 @@
+kind = "web"
+previewPath = "/"
+title = "Wrong Answers Only"
+version = "1.0.0"
+id = "artifacts/wrong-answers-only"
+router = "path"
+
+[[integratedSkills]]
+name = "react-vite"
+version = "1.0.0"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 19180
+
+[services.development]
+run = "pnpm --filter @workspace/wrong-answers-only run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/wrong-answers-only", "run", "build" ]
+publicDir = "artifacts/wrong-answers-only/dist/public"
+serve = "static"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "19180"
+BASE_PATH = "/"
