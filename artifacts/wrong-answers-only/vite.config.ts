@@ -18,13 +18,8 @@ if (Number.isNaN(port) || port <= 0) {
   throw new Error(`Invalid PORT value: "${rawPort}"`);
 }
 
-const basePath = process.env.BASE_PATH;
-
-if (!basePath) {
-  throw new Error(
-    "BASE_PATH environment variable is required but was not provided.",
-  );
-}
+// Fix Windows terminal fallback routing
+const basePath = process.env.BASE_PATH || "/";
 
 export default defineConfig({
   base: basePath,
@@ -65,6 +60,14 @@ export default defineConfig({
     allowedHosts: true,
     fs: {
       strict: true,
+    },
+
+    proxy: {
+      "/api": {
+        target: "http://127.0.0.1:8080",
+        changeOrigin: true,
+        secure: false,
+      },
     },
   },
   preview: {
